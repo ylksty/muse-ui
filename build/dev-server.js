@@ -60,9 +60,9 @@ app.use(devMiddleware)
 // compilation error display
 app.use(hotMiddleware)
 
-app.use('/favicon.ico', express.static('./src-docs/favicon.ico'))
-app.use('/version.json', express.static('./src-docs/version.json'))
-app.use('/', express.static('./src-docs/assets'))
+app.use('/favicon.ico', express.static('./src-kl/favicon.ico'))
+app.use('/version.json', express.static('./src-kl/version.json'))
+app.use('/', express.static('./src-kl/assets'))
 var uri = 'http://localhost:' + port
 
 devMiddleware.waitUntilValid(function () {

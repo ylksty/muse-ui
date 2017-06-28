@@ -3,12 +3,12 @@ var path = require('path')
 
 module.exports = {
   entry: {
-    app: path.resolve(__dirname, '../src-docs/main.js')
+    app: path.resolve(__dirname, '../src-kl/main.js')
   },
-  template: path.resolve(__dirname, '../src-docs/index.html'),
+  template: path.resolve(__dirname, '../src-kl/index.html'),
   build: {
     env: require('./prod.env'),
-    assetsRoot: path.resolve(__dirname, '../docs'),
+    assetsRoot: path.resolve(__dirname, '../kl'),
     assetsSubDirectory: '',
     assetsPublicPath: '',
     productionSourceMap: false,

@@ -3,7 +3,7 @@
     <div class="mu-banner">
       <img src="/images/bg.png" class="mu-banner-image" width="100%" height="100%"/>
       <div class="mu-logo">
-        <img src="/images/logo.png" class="mu-logo-image" alt="">
+        <img src="/images/logo-ylk.jpg" class="mu-logo-image" alt="">
       </div>
       <h1 class="mu-banner-title">
         Muse-UI

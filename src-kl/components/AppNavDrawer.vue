@@ -1,5 +1,5 @@
 <template>
-<mu-drawer @hide="handleHide" @close="handleClose" :open="open" :docked="docked" :overlay="docked" class="app-drawer" :zDepth="1">
+<mu-drawer @hide="handleHide" @close="handleClose" :open="open" :docked="docked" :overlay="docked" :right="true" class="app-drawer" :zDepth="1">
   <mu-appbar :zDepth="0" class="exmaples-nav-appbar">
     <a @click="handleMenuChange('#/index')" href="#/index" class="exmaples-appbar-title">Muse-UI</a>
     <!-- <mu-badge content="rc" class="exmaples-version" secondary/> -->

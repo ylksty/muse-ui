@@ -1,4 +1,5 @@
 export default {
+  applet: 'Applet',
   getStarted: 'Get Started',
   installation: 'Installation',
   usage: 'Usage',

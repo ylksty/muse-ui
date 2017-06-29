@@ -356,6 +356,10 @@ a {
 .mu-refresh-control {
   color: #009688;
 }
+.mu-snackbar {
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.87);
+}
 .mu-slider-track {
   background-color: #bdbdbd;
 }
@@ -374,10 +378,6 @@ a {
   border-color: #bdbdbd;
   color: #bdbdbd;
   background-color: #ffffff;
-}
-.mu-snackbar {
-  color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.87);
 }
 .mu-step-button {
   background-color: transparent;

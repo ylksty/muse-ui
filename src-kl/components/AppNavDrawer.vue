@@ -1,17 +1,10 @@
 <template>
-<mu-drawer @hide="handleHide" @close="handleClose" :open="open" :docked="docked" :overlay="docked" :right="true" class="app-drawer" :zDepth="1">
+<mu-drawer @hide="handleHide" @close="handleClose" :open="open" :docked="docked" :overlay="docked" class="app-drawer" :zDepth="1">
   <mu-appbar :zDepth="0" class="exmaples-nav-appbar">
     <a @click="handleMenuChange('#/index')" href="#/index" class="exmaples-appbar-title">Muse-UI</a>
-    <!-- <mu-badge content="rc" class="exmaples-version" secondary/> -->
   </mu-appbar>
   <mu-divider/>
   <div class="exmaple-drawer-content">
-    <div class="mu-version-box">
-      <span class="mu-version-text">Version: </span>
-      <mu-dropDown-menu :value="version" @change="handleVersionChange" v-if="versions.length > 0">
-        <mu-menu-item v-for="vtext in versions" :key="'version-' + vtext" :value="vtext" :title="vtext"/>
-      </mu-dropDown-menu>
-    </div>
     <div class="mu-lang-box">
       <span class="mu-lang-title">Lang: </span>
       <span class="mu-lang-select">
@@ -21,6 +14,10 @@
       </span>
     </div>
     <mu-list @change="handleMenuChange" :value="menuVal">
+      <mu-list-item :title="$t('applet')" toggleNested>
+        <mu-list-item value="#/marathon" slot="nested" :title="$t('marathon')"/>
+        <mu-list-item value="#/sudocu" slot="nested" :title="$t('sudocu')"/>
+      </mu-list-item>
       <mu-list-item :title="$t('getStarted')" toggleNested>
         <mu-list-item value="#/install" slot="nested" :title="$t('installation')"/>
         <mu-list-item value="#/usage" slot="nested" :title="$t('usage')"/>
@@ -209,28 +206,8 @@ export default {
   display: inline-block;
 }
 
-.exmaples-version {
-  margin-left: 10px;
-  vertical-align: text-top;
-}
-
 .exmaples-nav-sub-header {
   padding-left: 34px;
-}
-
-.mu-version-box{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 48px;
-  margin-top: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-.mu-version-text {
-  font-size: 16px;
-  margin-top: 8px;
-  width: 60px;
 }
 
 .mu-lang-box{

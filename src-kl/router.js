@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import Marathon from './views/applet/marathon'
+import Sudocu from './views/applet/sudocu'
 import Index from './views'
 import Install from './views/get-stared/install'
 import Usage from './views/get-stared/usage'
@@ -59,6 +61,8 @@ Vue.use(Router)
 const router = new Router({
   mode: 'hash',
   routes: [
+    { path: '/marathon', component: Marathon },
+    { path: '/sudocu', component: Sudocu },
     { path: '/index', component: Index },
     { path: '/install', component: Install },
     { path: '/usage', component: Usage },

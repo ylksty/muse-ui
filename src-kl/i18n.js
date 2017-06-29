@@ -6,6 +6,8 @@ Vue.use(VueI18n)
 Vue.config.lang = getUrlParam('lang') || window.localStorage.getItem('lang') || 'zh'
 
 Vue.locale('zh', {
+  marathon: '马拉松',
+  sudocu: '数独',
   install: '快速开始-安装',
   usage: '快速开始-使用',
   changeLog: '更新日志',
@@ -62,6 +64,8 @@ Vue.locale('zh', {
 })
 
 Vue.locale('en', {
+  marathon: 'Marathon',
+  sudocu: 'Sudocu',
   install: 'Installation',
   usage: 'Usage',
   changeLog: 'ChangeLog',

@@ -8,6 +8,7 @@
     "dev": "node build/dev-server.js",
     "build": "node build/build.js && gulp theme",
     "docs": "node build/docs.js",
+    "kl": "node build/kl.js",
     "lint": "eslint src",
     "release": "bash build/release.sh",
     "test": "NODE_ENV=test karma start test/unit/karma.conf.js --single-run",

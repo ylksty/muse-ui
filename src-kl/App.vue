@@ -88,22 +88,22 @@ function isDesktop () {
 @import "../src/styles/import.less";
 .example-appbar{
   position: fixed;
-  right: 256px;
-  left: 0;
+  left: 256px;
+  right: 0;
   top: 0;
   width: auto;
   transition: all .45s @easeOutFunction;
   &.nav-hide {
-    right: 0;
+    left: 0;
   }
 }
 
 .example-content{
   padding-top: 56px;
-  padding-right: 256px;
+  padding-left: 256px;
   transition: all .45s @easeOutFunction;
   &.nav-hide {
-    padding-right: 0;
+    padding-left: 0;
   }
 }
 
@@ -119,10 +119,10 @@ function isDesktop () {
 
 @media (max-width: 993px) {
   .example-appbar {
-    right: 0;
+    left: 0;
   }
   .example-content{
-    padding-right: 0;
+    padding-left: 0;
   }
   .content-wrapper {
     padding: 24px 36px;

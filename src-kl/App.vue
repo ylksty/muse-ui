@@ -1,8 +1,9 @@
 <template>
   <div id="app">
     <mu-appbar v-if="!isHomePage" :zDepth="0" :title="title === 'index' ? '' : $t(title)" class="example-appbar" :class="{'nav-hide': !open}">
-      <mu-icon-button @click="toggleNav" icon="menu" slot="left"/>
+      <mu-icon-button @click="toggleNav" icon=":mudocs-icon-custom-arrow-drop-right" slot="left"/>
       <mu-icon-button slot="right" href="https://github.com/ylksty/muse-ui" icon=":mudocs-icon-custom-github"/>
+      <mu-icon-button slot="right" href="http://blog.ylkget.com" icon=":mudocs-icon-action-home"/>
     </mu-appbar>
     <app-nav v-if="!isHomePage" @change="handleMenuChange" @close="toggleNav" :open="open" :docked="docked" />
     <div class="example-content" :class="{'nav-hide': !open, 'home-page': isHomePage}">

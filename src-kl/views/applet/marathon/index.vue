@@ -81,7 +81,7 @@
     <mu-row gutter>
       <mu-col width="0" tablet="0" desktop="20"></mu-col>
       <mu-col width="33" tablet="33" desktop="20">歩幅</mu-col>
-      <mu-col width="66" tablet="33" desktop="20">
+      <mu-col width="66" tablet="66" desktop="40">
         {{bufuCom}} cm
       </mu-col>
       <mu-col width="0" tablet="0" desktop="20"></mu-col>

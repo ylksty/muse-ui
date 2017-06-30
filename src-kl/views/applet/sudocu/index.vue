@@ -1,9 +1,9 @@
 <template>
 <div class="">
-  <mu-table :showCheckbox="false" ref="table">
+  <mu-table :showCheckbox="false" ref="table" @cellClick="cellClickHandle">
     <mu-tbody>
       <mu-tr v-for="(row, key, index) in sudoData.listRow" :key="index">
-        <mu-td v-for="(block, k, i) in row" :key="i" :name="k+'-'+i" :class="{'mu-td-null': !block.num && block.r && block.c, 'mu-td-blod': !block.r || !block.c}">{{blockShow(block)}}</mu-td>
+        <mu-td v-for="(block, k, i) in row" :key="i" :name="block.r+'-'+block.c" :class="blockBack(block)" style="border:1px solid;">{{blockShow(block)}}</mu-td>
       </mu-tr>
     </mu-tbody>
   </mu-table>
@@ -28,17 +28,34 @@ export default {
       var s = (r) => {
         for (var c = 0; c < 10; c++) {
           var b = (r, c) => {
+            if (r === 0 || c === 0) {
+              b = -1
+            } else {
+              var b = Math.floor((r - 1) / 3) * 3 + Math.ceil(c / 3)
+            }
             var block = {
               num: '',
               num_mb: '',
-              r: r,
-              c: c
+              r: r, // 行数
+              c: c, // 列数
+              b: b, // 宫格数
+              oe: b % 2
             }
             if (!this.sudoData.listRow[r]) {
               this.sudoData.listRow[r] = []
             }
             this.sudoData.listRow[r][c] = block
-//            this.sudoData.listCel[j][i] = block
+            if (!this.sudoData.listCel[c]) {
+              this.sudoData.listCel[c] = []
+            }
+            this.sudoData.listCel[c][r] = block
+            if (this.sudoData.listBlocks.length === 0) {
+              this.sudoData.listBlocks[0] = {}
+            }
+            if (!this.sudoData.listBlocks[b]) {
+              this.sudoData.listBlocks[b] = [{}]
+            }
+            this.sudoData.listBlocks[b].push(block)
           }
           b(r, c)
         }
@@ -46,6 +63,8 @@ export default {
       s(r)
     }
     console.log(this.sudoData.listRow)
+    console.log(this.sudoData.listCel)
+    console.log(this.sudoData.listBlocks)
   },
   methods: {
     bwithrc: function (r, c) {
@@ -59,8 +78,17 @@ export default {
       } else if (block.c === 0) {
         return block.r
       } else {
-        return block.r + '-' + block.c
+        return block.num
       }
+    },
+    blockBack: function (block) {
+      if (block.b < 0) {
+        return
+      }
+      return {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe}
+    },
+    cellClickHandle: function (rowIndex, columnName, td, tr) {
+      console.log(columnName)
     }
   }
 }
@@ -74,7 +102,10 @@ export default {
 .mu-td-blod {
   font-weight:bold;
 }
-.mu-td-null {
+.mu-td-lighterAccent {
   background: @lighterAccentColor;
+}
+.mu-td-deepPurple {
+  background: @deepPurple400;
 }
 </style>

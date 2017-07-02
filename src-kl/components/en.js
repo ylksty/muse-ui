@@ -1,4 +1,5 @@
 export default {
+  siteName: 'Kangle',
   applet: 'Applet',
   getStarted: 'Get Started',
   installation: 'Installation',

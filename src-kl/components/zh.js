@@ -1,4 +1,5 @@
 export default {
+  siteName: '康乐',
   applet: '小程序',
   getStarted: '快速开始',
   installation: '安装',

@@ -7,7 +7,8 @@
       </mu-tr>
     </mu-tbody>
   </mu-table>
-  <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="#a4c639" @click="resetClick" />
+  <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="#8bc34a" @click="resetClick" />
+  <mu-raised-button class="demo-raised-button" label="计算" backgroundColor="#009688" @click="calculateClick" />
   <mu-bottom-sheet :open="bottomSheet" :overlayOpacity="0.2" @close="closeBottomSheet">
     <mu-flexbox>
       <mu-flexbox-item>
@@ -69,7 +70,7 @@
     </mu-flexbox>
   </mu-bottom-sheet>
   <mu-popup position="top" :overlay="false" popupClass="demo-popup-top" :open="topPopup">
-    请先处理冲突,修改最近的数
+    请先处理冲突(修改最近的数)
   </mu-popup>
 </div>
 </template>
@@ -104,7 +105,7 @@ export default {
     this.init()
   },
   methods: {
-    init () {
+    init () { // 初始化
       this.sudoData = {
         listRow: [],
         listCel: [],
@@ -131,7 +132,8 @@ export default {
                 c: c, // 列数
                 b: b, // 宫格数
                 bn: bn, // 宫格内个数
-                oe: b % 2
+                oe: b % 2,
+                mb: [1, 2, 3, 4, 5, 6, 7, 8, 9]
               }
               if (!this.sudoData.listRow[r]) {
                 this.sudoData.listRow[r] = []
@@ -155,10 +157,13 @@ export default {
         s(r)
       }
     },
-    resetClick () {
+    resetClick () { // 重置
       this.init()
     },
-    blockShow: function (block) {
+    calculateClick () { // 计算按钮
+      console.log(234)
+    },
+    blockShow: function (block) { // 宫格内容
       if (block.r === 0 && block.c === 0) {
         return ''
       } else if (block.r === 0) {
@@ -169,17 +174,16 @@ export default {
         return block.num
       }
     },
-    blockStyle: function (block) {
+    blockStyle: function (block) { // 宫格背景
       if (block.b < 0) {
         return
       }
       var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-font-error-color': block.error}
       return style
     },
-    cellClickHandle: function (rowIndex, columnName, td, tr) {
+    cellClickHandle: function (rowIndex, columnName, td, tr) { // 宫格点击
       var lastClick = this.clickBlock && (this.clickBlock.r + '-' + this.clickBlock.c === columnName)
       if (this.error && !lastClick) {
-//        this.dialogErrorOpen()
         this.topPopup = true
         return
       }
@@ -188,10 +192,10 @@ export default {
       this.clickb = this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].b
       this.openBottomSheet(columnName)
     },
-    closeBottomSheet () {
+    closeBottomSheet () { // 关闭数字选择
       this.bottomSheet = false
     },
-    openBottomSheet (columnName) {
+    openBottomSheet (columnName) { // 打开数字选择
       this.columnName = columnName
       this.bottomSheet = true
     },
@@ -207,17 +211,20 @@ export default {
       }
       this.checkAndError(value)
     },
-    checkAndError (value) {
+    checkAndError (value) { // 检测错误,并提示
       this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = false
       this.error = false
-      for (var c in this.sudoData.listRow[this.clickBlock.r]) {
-        if (this.sudoData.listRow[this.clickBlock.r][c] === this.clickBlock) {
+      for (var c in this.sudoData.listRow[this.clickBlock.r]) { // 遍历所在行的每个宫格
+        if (this.sudoData.listRow[this.clickBlock.r][c] === this.clickBlock) { // 如果是当前宫格, 不判断
 
-        } else if (this.sudoData.listRow[this.clickBlock.r][c].num === value) {
+        } else if (this.sudoData.listRow[this.clickBlock.r][c].num === value) { // 如果选的值在行内已有
           this.sudoData.listRow[this.clickBlock.r][c].error = true
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
-        } else {
+        } else { // 如果选择的值在行内没有
+//          if (this.sudoData.listRow.mb.includes(value)) {
+//
+//          }
           this.sudoData.listRow[this.clickBlock.r][c].error = false
         }
       }

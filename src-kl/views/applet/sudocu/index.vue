@@ -7,8 +7,17 @@
       </mu-tr>
     </mu-tbody>
   </mu-table>
-  <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="#8bc34a" @click="resetClick" />
-  <mu-raised-button class="demo-raised-button" label="计算" backgroundColor="#009688" @click="calculateClick" />
+  <mu-flexbox>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="deepOrange500" @click="resetClick" />
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" :label="lockLabel" backgroundColor="teal500" @click="lockClick" />
+    </mu-flexbox-item>
+  </mu-flexbox>
   <mu-bottom-sheet :open="bottomSheet" :overlayOpacity="0.2" @close="closeBottomSheet">
     <mu-flexbox>
       <mu-flexbox-item>
@@ -70,8 +79,13 @@
     </mu-flexbox>
   </mu-bottom-sheet>
   <mu-popup position="top" :overlay="false" popupClass="demo-popup-top" :open="topPopup">
-    请先处理冲突(修改最近的数)
+    {{topPopmsg}}
   </mu-popup>
+  <mu-dialog :open="dialog.status" :title="dialog.title" @close="dialog.cancel">
+    {{this.dialog.msg}}
+    <mu-flat-button slot="actions" @click="dialog.cancel" primary label="取消"/>
+    <mu-flat-button slot="actions" primary @click="dialog.sure" label="确定"/>
+  </mu-dialog>
 </div>
 </template>
 
@@ -89,13 +103,26 @@ export default {
   },
   data () {
     return {
+      const: {
+        LOCKED_LABLE: '锁定题干',
+        UN_LOCKED_LABLE: '解锁题干'
+      },
       topPopup: false,
-      error: false,
+      topPopmsg: 'sss',
+      dialog: {
+        status: false,
+        title: 'Dialog',
+        msg: '这是一个简单的弹出框',
+        cancel: function () {},
+        sure: function () {}
+      },
       sudoData: {
         listRow: [],
         listCel: [],
         listBlocks: []
       },
+      locked: false,
+      error: false,
       clickBlock: null,
       columnName: 'lala',
       bottomSheet: false
@@ -104,6 +131,22 @@ export default {
   created () {
     this.init()
   },
+  computed: {
+    smartFill: function () {
+      if (this.locked) {
+        return 'deepPurple500'
+      } else {
+        return 'grey500'
+      }
+    },
+    lockLabel: function () {
+      if (this.locked) {
+        return this.const.UN_LOCKED_LABLE
+      } else {
+        return this.const.LOCKED_LABLE
+      }
+    }
+  },
   methods: {
     init () { // 初始化
       this.sudoData = {
@@ -111,6 +154,9 @@ export default {
         listCel: [],
         listBlocks: []
       }
+      this.locked = false
+      this.error = false
+      this.clickBlock = null
       for (var r = 0; r < 10; r++) {
         var s = (r) => {
           for (var c = 0; c < 10; c++) {
@@ -133,7 +179,8 @@ export default {
                 b: b, // 宫格数
                 bn: bn, // 宫格内个数
                 oe: b % 2,
-                mb: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+                mb: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                locked: false
               }
               if (!this.sudoData.listRow[r]) {
                 this.sudoData.listRow[r] = []
@@ -157,11 +204,62 @@ export default {
         s(r)
       }
     },
+    dialogInit (opt) {
+      Object.assign(this.dialog, {
+        closef: function () {
+          this.dialog.status = false
+        },
+        sure: function () {
+          this.dialog.status = false
+        }
+      }, opt)
+    },
+    topPopupFun (msg) { // 顶部弹出提示
+      this.topPopmsg = msg
+      this.topPopup = true
+    },
     resetClick () { // 重置
-      this.init()
+      this.dialogInit({
+        status: true,
+        title: '确认',
+        msg: '确认重置?',
+        sure: () => {
+          this.dialog.status = false
+          this.init()
+        },
+        cancel: () => {
+          this.dialog.status = false
+        }
+      })
     },
     calculateClick () { // 计算按钮
-      console.log(234)
+      if (this.locked) {
+        this.topPopupFun('还不能用')
+        return
+      } else {
+        this.topPopupFun('请先锁定题干')
+        return
+      }
+    },
+    lockClick () { // 题干锁定
+      this.locked = !this.locked
+      if (this.locked) {
+        for (var r in this.sudoData.listRow) {
+          for (var c in this.sudoData.listRow[r]) {
+            if (this.sudoData.listRow[r][c].num > 0) {
+              this.sudoData.listRow[r][c].locked = true
+            }
+          }
+        }
+      } else {
+        for (var r1 in this.sudoData.listRow) {
+          for (var c1 in this.sudoData.listRow[r1]) {
+            if (this.sudoData.listRow[r1][c1].num > 0) {
+              this.sudoData.listRow[r1][c1].locked = false
+            }
+          }
+        }
+      }
     },
     blockShow: function (block) { // 宫格内容
       if (block.r === 0 && block.c === 0) {
@@ -178,16 +276,25 @@ export default {
       if (block.b < 0) {
         return
       }
-      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-font-error-color': block.error}
+      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-error-color': block.error, 'mu-td-locked': block.locked}
       return style
     },
     cellClickHandle: function (rowIndex, columnName, td, tr) { // 宫格点击
-      var lastClick = this.clickBlock && (this.clickBlock.r + '-' + this.clickBlock.c === columnName)
-      if (this.error && !lastClick) {
-        this.topPopup = true
+      if (columnName.indexOf('0') >= 0) {
         return
       }
       var a = columnName.split('-')
+      if (this.locked) { // 如果锁定激活
+        if (this.sudoData.listRow[a[0]][a[1]].locked) {
+          this.topPopupFun('不能修改题干')
+          return
+        }
+      }
+      var lastClick = this.clickBlock && (this.clickBlock.r + '-' + this.clickBlock.c === columnName)
+      if (this.error && !lastClick) {
+        this.topPopupFun('请先处理冲突(修改最近的数)')
+        return
+      }
       this.clickBlock = this.sudoData.listRow[a[0]][a[1]]
       this.clickb = this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].b
       this.openBottomSheet(columnName)
@@ -222,9 +329,12 @@ export default {
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
         } else { // 如果选择的值在行内没有
-//          if (this.sudoData.listRow.mb.includes(value)) {
-//
-//          }
+          var i = this.sudoData.listRow[this.clickBlock.r][c].mb.findIndex(function (v, index, arr) {
+            return v === value
+          })
+          if (i !== -1) {
+            this.sudoData.listRow[this.clickBlock.r][c].mb.splice(i, 1)
+          }
           this.sudoData.listRow[this.clickBlock.r][c].error = false
         }
       }
@@ -236,6 +346,12 @@ export default {
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
         } else {
+          var i2 = this.sudoData.listCel[this.clickBlock.c][r].mb.findIndex(function (v, index, arr) {
+            return v === value
+          })
+          if (i2 !== -1) {
+            this.sudoData.listCel[this.clickBlock.c][r].mb.splice(i2, 1)
+          }
           this.sudoData.listCel[this.clickBlock.c][r].error = false
         }
       }
@@ -247,9 +363,18 @@ export default {
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
         } else {
-          this.sudoData.listBlocks[this.clickb][n].error = false
+          if (n !== '0') {
+            var i3 = this.sudoData.listBlocks[this.clickb][n].mb.findIndex(function (v, index, arr) {
+              return v === value
+            })
+            if (i3 !== -1) {
+              this.sudoData.listBlocks[this.clickb][n].mb.splice(i3, 1)
+            }
+            this.sudoData.listBlocks[this.clickb][n].error = false
+          }
         }
       }
+      console.log(this.sudoData.listRow)
     }
   }
 }
@@ -267,9 +392,12 @@ export default {
   background: @lighterAccentColor;
 }
 .mu-td-deepPurple {
-  background: @deepPurple400;
+  background: #7e57c2;
 }
-.mu-td-font-error-color {
-  background: @red500;
+.mu-td-error-color {
+  background: #f44336;
+}
+.mu-td-locked {
+  text-decoration: underline;
 }
 </style>

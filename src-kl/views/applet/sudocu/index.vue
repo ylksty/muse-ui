@@ -12,10 +12,21 @@
       <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="deepOrange500" @click="resetClick" />
     </mu-flexbox-item>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
+      <mu-raised-button class="demo-raised-button" label="返回题干" :backgroundColor="lockback" @click="lockbackClick" />
     </mu-flexbox-item>
     <mu-flexbox-item>
       <mu-raised-button class="demo-raised-button" :label="lockLabel" backgroundColor="teal500" @click="lockClick" />
+    </mu-flexbox-item>
+  </mu-flexbox>
+  <mu-flexbox>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" :label="mbLabel" backgroundColor="teal500" @click="mbClick" />
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      步数:{{sudoDataWatch}}
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
     </mu-flexbox-item>
   </mu-flexbox>
   <mu-bottom-sheet :open="bottomSheet" :overlayOpacity="0.2" @close="closeBottomSheet">
@@ -99,13 +110,18 @@ export default {
           this.topPopup = false
         }, 2000)
       }
+    },
+    sudoDataWatch (val) {
+      console.log(val)
     }
   },
   data () {
     return {
       const: {
         LOCKED_LABLE: '锁定题干',
-        UN_LOCKED_LABLE: '解锁题干'
+        UN_LOCKED_LABLE: '解锁题干',
+        CLOSE_MB_LABLE: '关闭提示',
+        OPEN_MB_LABLE: '打开提示'
       },
       topPopup: false,
       topPopmsg: 'sss',
@@ -121,17 +137,31 @@ export default {
         listCel: [],
         listBlocks: []
       },
-      locked: false,
-      error: false,
-      clickBlock: null,
-      columnName: 'lala',
-      bottomSheet: false
+      sets: {
+        rowset: [], // 行已选 用于提示数
+        colset: [], // 列已选
+        blockset: [] // 宫格已选
+      },
+      sudoDataWatch: 0, // 监控sudoData的变化
+      mb: false, // 提示开关
+      locked: false, // 锁定开关
+      error: false, // 错误开关
+      clickBlock: null, // 点击的宫格
+      columnName: 'lala', // 宫格名称
+      bottomSheet: false // 数字选择框
     }
   },
   created () {
     this.init()
   },
   computed: {
+    lockback: function () {
+      if (this.locked) {
+        return 'deepPurple500'
+      } else {
+        return 'grey500'
+      }
+    },
     smartFill: function () {
       if (this.locked) {
         return 'deepPurple500'
@@ -145,6 +175,13 @@ export default {
       } else {
         return this.const.LOCKED_LABLE
       }
+    },
+    mbLabel: function () {
+      if (this.mb) {
+        return this.const.CLOSE_MB_LABLE
+      } else {
+        return this.const.OPEN_MB_LABLE
+      }
     }
   },
   methods: {
@@ -157,6 +194,13 @@ export default {
       this.locked = false
       this.error = false
       this.clickBlock = null
+      this.mb = false
+      for (let [index, elem] of [1, 2, 3, 4, 5, 6, 7, 8, 9].entries()) {
+        index
+        this.sets.rowset[elem] = []
+        this.sets.colset[elem] = []
+        this.sets.blockset[elem] = []
+      }
       for (var r = 0; r < 10; r++) {
         var s = (r) => {
           for (var c = 0; c < 10; c++) {
@@ -202,6 +246,20 @@ export default {
           }
         }
         s(r)
+      }
+    },
+    lockbackClick () {
+      if (this.locked) {
+        for (var r in this.sudoData.listRow) {
+          for (var c in this.sudoData.listRow[r]) {
+            if (this.sudoData.listRow[r][c].num > 0 && !this.sudoData.listRow[r][c].locked) {
+              this.sudoData.listRow[r][c].num = ''
+            }
+          }
+        }
+        this.mbcal()
+      } else {
+        this.topPopupFun('请先锁定题干')
       }
     },
     dialogInit (opt) {
@@ -261,6 +319,9 @@ export default {
         }
       }
     },
+    mbClick () { // 提示开关
+      this.mb = !this.mb
+    },
     blockShow: function (block) { // 宫格内容
       if (block.r === 0 && block.c === 0) {
         return ''
@@ -268,6 +329,23 @@ export default {
         return block.c
       } else if (block.c === 0) {
         return block.r
+      } else if (this.mb && !block.num) {
+        var a = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        for (let [index, elem] of [1, 2, 3, 4, 5, 6, 7, 8, 9].entries()) {
+          index
+          if (this.sets.rowset[block.r].includes(elem) || this.sets.colset[block.c].includes(elem) || this.sets.blockset[block.b].includes(elem)) {
+            a.findIndex(function (value, index, arr) {
+              if (value === elem) {
+                a.splice(index, 1)
+              }
+            })
+          }
+        }
+        var s = a.join('')
+        if (s.length > 5) {
+          s = s.slice(0, 5) + ' ' + s.slice(5)
+        }
+        return s
       } else {
         return block.num
       }
@@ -276,11 +354,12 @@ export default {
       if (block.b < 0) {
         return
       }
-      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-error-color': block.error, 'mu-td-locked': block.locked}
+      var mb = this.mb && this.mb && !block.num
+      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-error-color': block.error, 'mu-td-locked': block.locked, 'mu-td-block': mb}
       return style
     },
     cellClickHandle: function (rowIndex, columnName, td, tr) { // 宫格点击
-      if (columnName.indexOf('0') >= 0) {
+      if (columnName.indexOf('0') >= 0) { // head点击无效
         return
       }
       var a = columnName.split('-')
@@ -291,12 +370,11 @@ export default {
         }
       }
       var lastClick = this.clickBlock && (this.clickBlock.r + '-' + this.clickBlock.c === columnName)
-      if (this.error && !lastClick) {
+      if (this.error && !lastClick) { // 如果有错误,并点击非最后点击宫格
         this.topPopupFun('请先处理冲突(修改最近的数)')
         return
       }
-      this.clickBlock = this.sudoData.listRow[a[0]][a[1]]
-      this.clickb = this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].b
+      this.clickBlock = this.sudoData.listRow[a[0]][a[1]] // 注册当前点击宫格
       this.openBottomSheet(columnName)
     },
     closeBottomSheet () { // 关闭数字选择
@@ -311,12 +389,13 @@ export default {
       this.itemCheck(value)
     },
     itemCheck (value) { // 选择1~9
-      if (value === 88) {
+      if (value === 88) { // 取消选择
         this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].num = ''
       } else {
         this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].num = value
       }
       this.checkAndError(value)
+      this.sudoDataWatch += 1 // 改动记录
     },
     checkAndError (value) { // 检测错误,并提示
       this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = false
@@ -328,13 +407,7 @@ export default {
           this.sudoData.listRow[this.clickBlock.r][c].error = true
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
-        } else { // 如果选择的值在行内没有
-          var i = this.sudoData.listRow[this.clickBlock.r][c].mb.findIndex(function (v, index, arr) {
-            return v === value
-          })
-          if (i !== -1) {
-            this.sudoData.listRow[this.clickBlock.r][c].mb.splice(i, 1)
-          }
+        } else { // 如果选择的值在行内不同
           this.sudoData.listRow[this.clickBlock.r][c].error = false
         }
       }
@@ -346,35 +419,41 @@ export default {
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
         } else {
-          var i2 = this.sudoData.listCel[this.clickBlock.c][r].mb.findIndex(function (v, index, arr) {
-            return v === value
-          })
-          if (i2 !== -1) {
-            this.sudoData.listCel[this.clickBlock.c][r].mb.splice(i2, 1)
-          }
           this.sudoData.listCel[this.clickBlock.c][r].error = false
         }
       }
-      for (var n in this.sudoData.listBlocks[this.clickb]) {
-        if (this.sudoData.listBlocks[this.clickb][n] === this.clickBlock) {
+      for (var n in this.sudoData.listBlocks[this.clickBlock.b]) {
+        if (this.sudoData.listBlocks[this.clickBlock.b][n] === this.clickBlock) {
 
-        } else if (this.sudoData.listBlocks[this.clickb][n].num === value) {
-          this.sudoData.listBlocks[this.clickb][n].error = true
+        } else if (this.sudoData.listBlocks[this.clickBlock.b][n].num === value) {
+          this.sudoData.listBlocks[this.clickBlock.b][n].error = true
           this.sudoData.listRow[this.clickBlock.r][this.clickBlock.c].error = true
           this.error = true
         } else {
           if (n !== '0') {
-            var i3 = this.sudoData.listBlocks[this.clickb][n].mb.findIndex(function (v, index, arr) {
-              return v === value
-            })
-            if (i3 !== -1) {
-              this.sudoData.listBlocks[this.clickb][n].mb.splice(i3, 1)
-            }
-            this.sudoData.listBlocks[this.clickb][n].error = false
+            this.sudoData.listBlocks[this.clickBlock.b][n].error = false
           }
         }
       }
-      console.log(this.sudoData.listRow)
+      if (!this.error) {
+        this.mbcal()
+      }
+//      console.log(this.sets)
+//      console.log(this.sudoData)
+    },
+    mbcal () {
+      for (var r in this.sudoData.listRow) {
+        this.sets.rowset[r] = []
+        this.sets.colset[r] = []
+        this.sets.blockset[r] = []
+        for (var c in this.sudoData.listRow[r]) {
+          if (this.sudoData.listRow[r][c].num > 0) {
+            this.sets.rowset[this.sudoData.listRow[r][c].r].push(this.sudoData.listRow[r][c].num)
+            this.sets.rowset[this.sudoData.listRow[r][c].c].push(this.sudoData.listRow[r][c].num)
+            this.sets.rowset[this.sudoData.listRow[r][c].b].push(this.sudoData.listRow[r][c].num)
+          }
+        }
+      }
     }
   }
 }
@@ -399,5 +478,13 @@ export default {
 }
 .mu-td-locked {
   text-decoration: underline;
+}
+.mu-td-block{
+  padding: 0px;
+  text-align: left;
+  vertical-align: top;
+  white-space: normal;
+  font-weight: 300;
+  font-size: 12px;
 }
 </style>

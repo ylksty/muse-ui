@@ -9,6 +9,8 @@ import router from './router'
 import FastClick from 'fastclick'
 import './i18n'
 
+import store from './store'
+
 Vue.use(MuseUI)
 Vue.component('markdown-element', markdownElement)
 Vue.component('code-example', codeExample)
@@ -18,5 +20,6 @@ FastClick.attach(document.body)
 /*eslint-disable*/
 new Vue({
   router,
+  store,
   ...App
 }).$mount('#app')

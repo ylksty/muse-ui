@@ -9,7 +9,7 @@
   </mu-table>
   <mu-flexbox>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="deepOrange500" @click="resetClick" />
+      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
     </mu-flexbox-item>
     <mu-flexbox-item>
       <mu-raised-button class="demo-raised-button" label="返回题干" :backgroundColor="lockback" @click="lockbackClick" />
@@ -26,7 +26,17 @@
       步数:{{sudoDataWatch}}
     </mu-flexbox-item>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
+      <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="deepOrange500" @click="resetClick" />
+    </mu-flexbox-item>
+  </mu-flexbox>
+  <mu-flexbox>
+    <mu-flexbox-item>
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="回档" backgroundColor="blue800" @click="openBottomSheetSnapshot" />
+    </mu-flexbox-item>
+    <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="存档" backgroundColor="blue800" @click="snapshotStoreConfirm" />
     </mu-flexbox-item>
   </mu-flexbox>
   <mu-bottom-sheet :open="bottomSheet" :overlayOpacity="0.2" @close="closeBottomSheet">
@@ -97,11 +107,23 @@
     <mu-flat-button slot="actions" @click="dialog.cancel" primary label="取消"/>
     <mu-flat-button slot="actions" primary @click="dialog.sure" label="确定"/>
   </mu-dialog>
+  <mu-bottom-sheet :open="snapshot.bottomSheet" @close="closeBottomSheetSnapshot">
+    <mu-list @itemClick="closeBottomSheetSnapshot">
+      <mu-sub-header>
+        请选择一个
+      </mu-sub-header>
+      <mu-list-item title="阴阳师"/>
+      <mu-list-item title="贪吃蛇大作战"/>
+      <mu-list-item title="一划到底"/>
+      <mu-list-item title="全民斗地主"/>
+      <mu-list-item v-for="(row, key) in abc" :key="key" :title="row"/>
+    </mu-list>
+  </mu-bottom-sheet>
 </div>
 </template>
 
 <script>
-
+import { mapActions, mapGetters } from 'vuex'
 export default {
   watch: {
     topPopup (val) {
@@ -117,6 +139,7 @@ export default {
   },
   data () {
     return {
+      list: {'a': '急急急'},
       const: {
         LOCKED_LABLE: '锁定题干',
         UN_LOCKED_LABLE: '解锁题干',
@@ -148,13 +171,29 @@ export default {
       error: false, // 错误开关
       clickBlock: null, // 点击的宫格
       columnName: 'lala', // 宫格名称
-      bottomSheet: false // 数字选择框
+      bottomSheet: false, // 数字选择框
+      snapshot: {
+        bottomSheet: false
+      }
     }
   },
   created () {
+    document.onkeyup = (event) => {
+      if (this.bottomSheet) {
+        var b = !!event
+        var e = b ? event : window.event
+        var n = e.keyCode - 48
+        if (n > 0 && n < 10) {
+          this.itemCheckButton(n)
+        }
+      }
+    }
     this.init()
   },
   computed: {
+    ...mapGetters([
+      'abc'
+    ]),
     lockback: function () {
       if (this.locked) {
         return 'deepPurple500'
@@ -185,6 +224,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions([
+      'snapshotStoreAdd'
+    ]),
     init () { // 初始化
       this.sudoData = {
         listRow: [],
@@ -438,22 +480,52 @@ export default {
       if (!this.error) {
         this.mbcal()
       }
-//      console.log(this.sets)
-//      console.log(this.sudoData)
+      console.log(this.sets)
+      console.log(this.sudoData)
     },
     mbcal () {
+      for (let [index, elem] of [1, 2, 3, 4, 5, 6, 7, 8, 9].entries()) {
+        index
+        this.sets.rowset[elem] = []
+        this.sets.colset[elem] = []
+        this.sets.blockset[elem] = []
+      }
+
       for (var r in this.sudoData.listRow) {
-        this.sets.rowset[r] = []
-        this.sets.colset[r] = []
-        this.sets.blockset[r] = []
         for (var c in this.sudoData.listRow[r]) {
           if (this.sudoData.listRow[r][c].num > 0) {
+            if (!this.sets.rowset[this.sudoData.listRow[r][c].r]) {
+              this.sets.rowset[this.sudoData.listRow[r][c].r] = []
+            }
+            if (!this.sets.colset[this.sudoData.listRow[r][c].c]) {
+              this.sets.colset[this.sudoData.listRow[r][c].c] = []
+            }
+            if (!this.sets.blockset[this.sudoData.listRow[r][c].b]) {
+              this.sets.blockset[this.sudoData.listRow[r][c].b] = []
+            }
             this.sets.rowset[this.sudoData.listRow[r][c].r].push(this.sudoData.listRow[r][c].num)
-            this.sets.rowset[this.sudoData.listRow[r][c].c].push(this.sudoData.listRow[r][c].num)
-            this.sets.rowset[this.sudoData.listRow[r][c].b].push(this.sudoData.listRow[r][c].num)
+            this.sets.colset[this.sudoData.listRow[r][c].c].push(this.sudoData.listRow[r][c].num)
+            this.sets.blockset[this.sudoData.listRow[r][c].b].push(this.sudoData.listRow[r][c].num)
           }
         }
       }
+    },
+    closeBottomSheetSnapshot () {
+      this.snapshot.bottomSheet = false
+    },
+    openBottomSheetSnapshot () {
+      this.snapshot.bottomSheet = true
+    },
+    snapshotStoreConfirm () {
+      this.dialogInit({
+        status: true,
+        title: '存档确认',
+        msg: '确认存档吗?',
+        sure: () => {
+          this.dialog.status = false
+          this.snapshotStoreAdd('234')
+        }
+      })
     }
   }
 }
@@ -468,16 +540,16 @@ export default {
   font-weight:bold;
 }
 .mu-td-lighterAccent {
-  background: @lighterAccentColor;
+  background: #e0e0e0;
 }
 .mu-td-deepPurple {
-  background: #7e57c2;
+  background: #b39ddb;
 }
 .mu-td-error-color {
   background: #f44336;
 }
 .mu-td-locked {
-  text-decoration: underline;
+  font-weight: bold;
 }
 .mu-td-block{
   padding: 0px;

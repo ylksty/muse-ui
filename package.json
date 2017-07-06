@@ -106,6 +106,7 @@
   ],
   "dependencies": {
     "keycode": "^2.1.9",
-    "lodash.tolower": "^4.1.2"
+    "lodash.tolower": "^4.1.2",
+    "vuex": "^2.3.1"
   }
 }

@@ -1,5 +1,5 @@
 import * as types from '../mutations_types.js'
-import * as local from '../lib/localStorage'
+import * as local from '../lib-kl/localStorage'
 
 let state = {
   count: 0,

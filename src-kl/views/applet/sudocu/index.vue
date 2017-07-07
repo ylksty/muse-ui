@@ -3,7 +3,7 @@
   <mu-table :showCheckbox="false" ref="table" @cellClick="cellClickHandle">
     <mu-tbody>
       <mu-tr v-for="(row, key, index) in sudoData.listRow" :key="index">
-        <mu-td v-for="(block, k, i) in row" :key="i" :name="block.r+'-'+block.c" :class="blockStyle(block)" style="border:1px solid;">{{blockShow(block)}}</mu-td>
+        <mu-td v-for="(block, k, i) in row" :key="i" :name="block.r+'-'+block.c" :class="blockStyle(block)" style="border:1px solid;"><span :class="blockSpanStyle(block)" v-html="blockShow(block)"></span></mu-td>
       </mu-tr>
     </mu-tbody>
   </mu-table>
@@ -112,11 +112,7 @@
       <mu-sub-header>
         请选择一个
       </mu-sub-header>
-      <mu-list-item title="阴阳师"/>
-      <mu-list-item title="贪吃蛇大作战"/>
-      <mu-list-item title="一划到底"/>
-      <mu-list-item title="全民斗地主"/>
-      <mu-list-item v-for="(row, key) in abc" :key="key" :title="row"/>
+      <mu-list-item v-for="(row, key) in SUDOCU_G_DATA_LIST_GET" :key="key" :title="key + '-' + row.name" @click="cacheCheckButton(key)" />
     </mu-list>
   </mu-bottom-sheet>
 </div>
@@ -134,12 +130,11 @@ export default {
       }
     },
     sudoDataWatch (val) {
-      console.log(val)
+//      console.log(val)
     }
   },
   data () {
     return {
-      list: {'a': '急急急'},
       const: {
         LOCKED_LABLE: '锁定题干',
         UN_LOCKED_LABLE: '解锁题干',
@@ -155,6 +150,11 @@ export default {
         cancel: function () {},
         sure: function () {}
       },
+      columnName: 'lala', // 宫格名称
+      bottomSheet: false, // 数字选择框
+      snapshot: {
+        bottomSheet: false
+      },
       sudoData: {
         listRow: [],
         listCel: [],
@@ -169,12 +169,7 @@ export default {
       mb: false, // 提示开关
       locked: false, // 锁定开关
       error: false, // 错误开关
-      clickBlock: null, // 点击的宫格
-      columnName: 'lala', // 宫格名称
-      bottomSheet: false, // 数字选择框
-      snapshot: {
-        bottomSheet: false
-      }
+      clickBlock: null // 点击的宫格
     }
   },
   created () {
@@ -192,7 +187,7 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'abc'
+      'SUDOCU_G_DATA_LIST_GET'
     ]),
     lockback: function () {
       if (this.locked) {
@@ -225,7 +220,7 @@ export default {
   },
   methods: {
     ...mapActions([
-      'snapshotStoreAdd'
+      'SUDOCU_F_DATA_ADD'
     ]),
     init () { // 初始化
       this.sudoData = {
@@ -265,7 +260,6 @@ export default {
                 b: b, // 宫格数
                 bn: bn, // 宫格内个数
                 oe: b % 2,
-                mb: [1, 2, 3, 4, 5, 6, 7, 8, 9],
                 locked: false
               }
               if (!this.sudoData.listRow[r]) {
@@ -306,10 +300,7 @@ export default {
     },
     dialogInit (opt) {
       Object.assign(this.dialog, {
-        closef: function () {
-          this.dialog.status = false
-        },
-        sure: function () {
+        cancel: () => {
           this.dialog.status = false
         }
       }, opt)
@@ -326,9 +317,6 @@ export default {
         sure: () => {
           this.dialog.status = false
           this.init()
-        },
-        cancel: () => {
-          this.dialog.status = false
         }
       })
     },
@@ -396,8 +384,15 @@ export default {
       if (block.b < 0) {
         return
       }
-      var mb = this.mb && this.mb && !block.num
-      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-error-color': block.error, 'mu-td-locked': block.locked, 'mu-td-block': mb}
+      var mb = this.mb && !block.num
+      var style = {'mu-td-lighterAccent': block.oe, 'mu-td-deepPurple': !block.oe, 'mu-td-error-color': block.error, 'mu-td-block': mb}
+      return style
+    },
+    blockSpanStyle: function (block) {
+      if (block.b < 0) {
+        return
+      }
+      var style = {'mu-td-locked': block.locked}
       return style
     },
     cellClickHandle: function (rowIndex, columnName, td, tr) { // 宫格点击
@@ -480,8 +475,8 @@ export default {
       if (!this.error) {
         this.mbcal()
       }
-      console.log(this.sets)
-      console.log(this.sudoData)
+//      console.log(this.sets)
+//      console.log(this.sudoData)
     },
     mbcal () {
       for (let [index, elem] of [1, 2, 3, 4, 5, 6, 7, 8, 9].entries()) {
@@ -523,9 +518,23 @@ export default {
         msg: '确认存档吗?',
         sure: () => {
           this.dialog.status = false
-          this.snapshotStoreAdd('234')
+          var d = new Date()
+          var name = d.getFullYear() + '/' + d.getMonth() + '/' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds()
+          this.SUDOCU_F_DATA_ADD({name: name, data: this.$data})
         }
       })
+    },
+    cacheCheckButton (n) {
+      this.init()
+      let data = JSON.parse(JSON.stringify(this.SUDOCU_G_DATA_LIST_GET[n].data))
+//      Object.assign(this.$data, data)
+      this.sudoData = data.sudoData
+      this.sets = data.sets
+      this.sudoDataWatch = data.sudoDataWatch
+      this.mb = data.mb
+      this.locked = data.locked
+      this.error = data.error
+      this.clickBlock = data.clickBlock
     }
   }
 }
@@ -549,9 +558,9 @@ export default {
   background: #f44336;
 }
 .mu-td-locked {
-  font-weight: bold;
+  color: #d50000;
 }
-.mu-td-block{
+.mu-td-block {
   padding: 0px;
   text-align: left;
   vertical-align: top;

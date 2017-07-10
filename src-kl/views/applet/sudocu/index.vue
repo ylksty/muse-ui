@@ -9,7 +9,7 @@
   </mu-table>
   <mu-flexbox>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
+      <mu-raised-button class="demo-raised-button" :label="mbLabel" backgroundColor="teal500" @click="mbClick" />
     </mu-flexbox-item>
     <mu-flexbox-item>
       <mu-raised-button class="demo-raised-button" label="返回题干" :backgroundColor="lockback" @click="lockbackClick" />
@@ -20,10 +20,10 @@
   </mu-flexbox>
   <mu-flexbox>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" :label="mbLabel" backgroundColor="teal500" @click="mbClick" />
+      <mu-raised-button class="demo-raised-button" label="回档" backgroundColor="blue800" @click="openBottomSheetSnapshot" />
     </mu-flexbox-item>
     <mu-flexbox-item>
-      步数:{{sudoDataWatch}}
+      <mu-raised-button class="demo-raised-button" label="存档" backgroundColor="blue800" @click="snapshotStoreConfirm" />
     </mu-flexbox-item>
     <mu-flexbox-item>
       <mu-raised-button class="demo-raised-button" label="重置" backgroundColor="deepOrange500" @click="resetClick" />
@@ -31,12 +31,13 @@
   </mu-flexbox>
   <mu-flexbox>
     <mu-flexbox-item>
+      <mu-raised-button class="demo-raised-button" label="智能填充" :backgroundColor="smartFill" @click="calculateClick" />
     </mu-flexbox-item>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="回档" backgroundColor="blue800" @click="openBottomSheetSnapshot" />
+
     </mu-flexbox-item>
     <mu-flexbox-item>
-      <mu-raised-button class="demo-raised-button" label="存档" backgroundColor="blue800" @click="snapshotStoreConfirm" />
+
     </mu-flexbox-item>
   </mu-flexbox>
   <mu-bottom-sheet :open="bottomSheet" :overlayOpacity="0.2" @close="closeBottomSheet">
@@ -286,14 +287,22 @@ export default {
     },
     lockbackClick () {
       if (this.locked) {
-        for (var r in this.sudoData.listRow) {
-          for (var c in this.sudoData.listRow[r]) {
-            if (this.sudoData.listRow[r][c].num > 0 && !this.sudoData.listRow[r][c].locked) {
-              this.sudoData.listRow[r][c].num = ''
+        this.dialogInit({
+          status: true,
+          title: '确认',
+          msg: '确认清空题干以外的数字?',
+          sure: () => {
+            for (var r in this.sudoData.listRow) {
+              for (var c in this.sudoData.listRow[r]) {
+                if (this.sudoData.listRow[r][c].num > 0 && !this.sudoData.listRow[r][c].locked) {
+                  this.sudoData.listRow[r][c].num = ''
+                }
+              }
             }
+            this.mbcal()
+            this.dialog.status = false
           }
-        }
-        this.mbcal()
+        })
       } else {
         this.topPopupFun('请先锁定题干')
       }
@@ -392,7 +401,8 @@ export default {
       if (block.b < 0) {
         return
       }
-      var style = {'mu-td-locked': block.locked}
+      var ri = !!block.num && !block.error && !block.locked
+      var style = {'mu-td-locked': block.locked, 'mu-td-ri': ri}
       return style
     },
     cellClickHandle: function (rowIndex, columnName, td, tr) { // 宫格点击
@@ -567,5 +577,8 @@ export default {
   white-space: normal;
   font-weight: 300;
   font-size: 12px;
+}
+.mu-td-ri {
+  color: #00695c;
 }
 </style>

@@ -17,6 +17,7 @@
       <mu-list-item :title="$t('applet')" toggleNested>
         <mu-list-item value="#/marathon" slot="nested" :title="$t('marathon')"/>
         <mu-list-item value="#/sudocu" slot="nested" :title="$t('sudocu')"/>
+        <mu-list-item value="#/draw" slot="nested" :title="$t('draw')"/>
       </mu-list-item>
       <mu-list-item :title="$t('getStarted')" toggleNested>
         <mu-list-item value="#/install" slot="nested" :title="$t('installation')"/>

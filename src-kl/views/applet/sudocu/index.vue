@@ -1,5 +1,5 @@
 <template>
-<div class="">
+<div>
   <mu-table :showCheckbox="false" ref="table" @cellClick="cellClickHandle">
     <mu-tbody>
       <mu-tr v-for="(row, key, index) in sudoData.listRow" :key="index">

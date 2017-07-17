@@ -37,7 +37,7 @@
     </mu-row>
 
     <transition name="abc">
-      <mu-row gutter v-show="minShow" class="abc">
+      <mu-row gutter v-show="minShow">
         <mu-col width="0" tablet="0" desktop="20"></mu-col>
         <mu-col width="100" tablet="100" desktop="60">
           <p>最小值</p>
@@ -48,7 +48,7 @@
     </transition>
 
     <transition name="abc">
-      <mu-row gutter v-show="maxShow" class="abc">
+      <mu-row gutter v-show="maxShow">
         <mu-col width="0" tablet="0" desktop="20"></mu-col>
         <mu-col width="100" tablet="100" desktop="60">
           <p>最大值</p>
@@ -59,7 +59,7 @@
     </transition>
 
     <transition name="abc">
-      <mu-row gutter v-show="frequencyShow" class="abc">
+      <mu-row gutter v-show="frequencyShow">
         <mu-col width="0" tablet="0" desktop="20"></mu-col>
         <mu-col width="100" tablet="100" desktop="60">
           <p>频率: {{frequency}}</p>
@@ -187,14 +187,12 @@ export default {
     background: #f0f4c3;
   }
 
-  .abc-enter-active,
-  .abc-leave-active{
+  .abc-enter-active{
     transition: transform .5s cubic-bezier(0.23, 1, 0.32, 1);
     backface-visibility: hidden;
   }
 
-  .abc-enter,
-  .abc-leave-active{
+  .abc-enter{
     transform: translate3d(0, 100%, 0);
   }
 </style>

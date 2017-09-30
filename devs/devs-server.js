@@ -1,9 +1,10 @@
+var config = require('../config')
 require('./check-versions')()
+
 var yg = require('./yg')
 
-var config = require('../config')
 if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = JSON.parse(config.dev.env.NODE_ENV)
+  process.env.NODE_ENV = JSON.parse(config.devs.env.NODE_ENV)
 }
 
 console.log(config)
@@ -14,4 +15,15 @@ var app = express()
 var webpack = require('webpack')
 var webpackConfig = require('./webpack.dev.conf')
 yg(webpackConfig)
+
+// default port where dev server listens for incoming traffic
+var port = process.env.PORT || config.devs.port
+
+var compiler = webpack(webpackConfig)
+
+var devMiddleware = require('webpack-dev-middleware')(compiler, {
+  publicPath: webpackConfig.output.publicPath,
+  quiet: true
+})
+
 

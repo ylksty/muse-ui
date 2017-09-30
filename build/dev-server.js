@@ -63,7 +63,7 @@ app.use(hotMiddleware)
 app.use('/favicon.ico', express.static('./src-kl/favicon.ico'))
 app.use('/version.json', express.static('./src-kl/version.json'))
 app.use('/', express.static('./src-kl/assets'))
-var uri = 'http://localhost:' + port
+var uri = 'http://127.0.0.1:' + port
 
 devMiddleware.waitUntilValid(function () {
   console.log('> Listening at ' + uri + '\n')

@@ -62,8 +62,8 @@ Vue.use(Router)
 const router = new Router({
   mode: 'hash',
   routes: [
-    { path: '/draw', component: Draw },
     { path: '/marathon', component: Marathon },
+    { path: '/draw', component: Draw },
     { path: '/sudocu', component: Sudocu },
     { path: '/index', component: Index },
     { path: '/install', component: Install },

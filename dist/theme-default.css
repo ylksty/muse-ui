@@ -216,6 +216,12 @@ a {
 .mu-grid-tile-action .mu-icon {
   color: #ffffff;
 }
+.mu-icon-button-primary {
+  color: #7e57c2;
+}
+.mu-icon-button-secondary {
+  color: #ff4081;
+}
 .mu-circle-spinner {
   border-color: #7e57c2;
 }

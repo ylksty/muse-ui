@@ -26,6 +26,9 @@ body {
 a {
   color: #ff4081;
 }
+.mu-bottom-sheet {
+  background-color: #424242;
+}
 .mu-bottom-nav {
   background-color: #424242;
 }
@@ -49,9 +52,6 @@ a {
 }
 .mu-bottom-nav-shift .mu-bottom-item-active .mu-bottom-item-icon {
   color: #303030;
-}
-.mu-bottom-sheet {
-  background-color: #424242;
 }
 .mu-card {
   background-color: #303030;
@@ -104,6 +104,9 @@ a {
 .mu-checkbox.disabled .mu-checkbox-icon-checked {
   color: rgba(255, 255, 255, 0.3);
 }
+.mu-circular-progress-determinate-path {
+  stroke: #1976d2;
+}
 .mu-chip {
   background-color: #4f4f4f;
   color: rgba(255, 255, 255, 0.87);
@@ -117,9 +120,6 @@ a {
 }
 .mu-chip-delete-icon {
   color: rgba(255, 255, 255, 0.26);
-}
-.mu-circular-progress-determinate-path {
-  stroke: #1976d2;
 }
 .mu-calendar {
   color: #ffffff;

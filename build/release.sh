@@ -16,14 +16,14 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # npm run test
 
   # build
-  #VERSION=$VERSION npm run build
-  #VERSION=$VERSION npm run docs
+  VERSION=$VERSION npm run build
+  VERSION=$VERSION npm run docs
 
-  cd docs
-  git add -A
-  git commit -m "[buildDoc] $VERSION"
-  git push
-  cd -
+  #cd docs
+  #git add -A
+  #git commit -m "[buildDoc] $VERSION"
+  #git push
+  #cd -
 
   # commit
   echo "======1====="

@@ -22,8 +22,11 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # 必须有内容不同,不然发布会失败
   cd docs
   git add .
+  echo "=====1====="
   git commit -m "[buildDoc] $VERSION"
+  echo "=====2====="
   git push
+  echo "=====3====="
   cd -
 
   # commit

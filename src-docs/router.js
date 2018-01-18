@@ -19,6 +19,7 @@ import BottomSheet from './views/components/bottomSheet'
 import FlatButton from './views/components/flatButton'
 import RaisedButton from './views/components/raisedButton'
 import IconButton from './views/components/iconButton'
+import SvgButton from './views/components/svgButton'
 import FloatButton from './views/components/floatButton'
 import Card from './views/components/card'
 import Chip from './views/components/chip'
@@ -84,6 +85,7 @@ const router = new Router({
     { path: '/flatButton', component: FlatButton },
     { path: '/raisedButton', component: RaisedButton },
     { path: '/iconButton', component: IconButton },
+    { path: '/svgButton', component: SvgButton },
     { path: '/floatButton', component: FloatButton },
     { path: '/card', component: Card },
     { path: '/chip', component: Chip },

@@ -44,6 +44,7 @@
           <mu-list-item slot="nested" value="#/flatButton" title="Flat Button"></mu-list-item>
           <mu-list-item slot="nested" value="#/raisedButton" title="Raised Button"></mu-list-item>
           <mu-list-item slot="nested" value="#/iconButton" title="Icon Button"></mu-list-item>
+          <mu-list-item slot="nested" value="#/svgButton" title="Svg Button"></mu-list-item>
           <mu-list-item slot="nested" value="#/floatButton" title="Floating Action Button"></mu-list-item>
         </mu-list-item>
         <mu-list-item slot="nested" value="#/card" title="Card"/>

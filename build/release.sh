@@ -21,7 +21,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
   cd docs
   git add -A
-  git commit -m "[build] $VERSION"
+  git commit -m "[buildDoc] $VERSION"
   git push
   cd -
 

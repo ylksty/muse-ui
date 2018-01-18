@@ -16,8 +16,8 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # npm run test
 
   # build
-  VERSION=$VERSION npm run build
-  VERSION=$VERSION npm run docs
+  #VERSION=$VERSION npm run build
+  #VERSION=$VERSION npm run docs
 
   cd docs
   git add -A
@@ -26,10 +26,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   cd -
 
   # commit
-  pwd
+  echo "==========="
   git add -A
   git commit -m "[build] $VERSION"
+  echo "==========="
   npm version $VERSION --message "[release] $VERSION"
+  echo "==========="
 
   # publish
   git push origin refs/tags/v$VERSION

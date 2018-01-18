@@ -29,7 +29,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   #echo "=====3====="
   #cd -
 
-  # commit
+  # commit s
   git add -A
   git commit -m "[build] $VERSION"
   npm version $VERSION --message "[release] $VERSION"

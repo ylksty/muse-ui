@@ -26,12 +26,12 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   cd -
 
   # commit
-  echo "==========="
+  echo "======1====="
   git add -A
   git commit -m "[build] $VERSION"
-  echo "==========="
+  echo "======2====="
   npm version $VERSION --message "[release] $VERSION"
-  echo "==========="
+  echo "======3====="
 
   # publish
   git push origin refs/tags/v$VERSION

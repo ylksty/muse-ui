@@ -18,6 +18,10 @@
 npm install muse-ui -save
 ```
 
+```bash
+npm install musekl-ui -save
+```
+
 ## Get Started
 
 ```javascript

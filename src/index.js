@@ -1,12 +1,14 @@
 import './styles/base.less'
 import {retina} from './utils'
 import icon from './icon'
+import svg from './svg'
 import alert from './alert'
 import backTop from './backTop'
 import badge from './badge'
 import * as breadCrumb from './breadCrumb'
 import appBar from './appBar'
 import iconButton from './iconButton'
+import svgButton from './svgButton'
 import flatButton from './flatButton'
 import raisedButton from './raisedButton'
 import floatButton from './floatButton'
@@ -59,12 +61,14 @@ import * as flexbox from './flexbox'
 import config from './config'
 const components = {
   icon,
+  svg,
   alert,
   backTop,
   badge,
   ...breadCrumb,
   appBar,
   iconButton,
+  svgButton,
   flatButton,
   raisedButton,
   floatButton,

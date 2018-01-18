@@ -16,22 +16,20 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   # npm run test
 
   # build
-  #VERSION=$VERSION npm run build
-  #VERSION=$VERSION npm run docs
+  VERSION=$VERSION npm run build
+  VERSION=$VERSION npm run docs
 
-  #cd docs
-  #git add -A
-  #git commit -m "[buildDoc] $VERSION"
-  #git push
-  #cd -
+  # 必须有内容不同,不然发布会失败
+  cd docs
+  git add .
+  git commit -m "[buildDoc] $VERSION"
+  git push
+  cd -
 
   # commit
-  echo "======1====="
   git add -A
   git commit -m "[build] $VERSION"
-  echo "======2====="
   npm version $VERSION --message "[release] $VERSION"
-  echo "======3====="
 
   # publish
   git push origin refs/tags/v$VERSION
